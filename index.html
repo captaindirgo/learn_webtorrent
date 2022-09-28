@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Web Torrent Tutorial</title>
+    <meta charset="UTF-8" />
+    <script src="https://cdn.jsdelivr.net/webtorrent/latest/webtorrent.min.js"></script>
+    <!-- <script src="./webtorrent.debug.js"></script> -->
+  </head>
+  <body>
+    <div style="display: flex; flex-direction: column; align-items: center;">
+    <video id="video-container" controls="true" width="600px"></video>
+    <br>
+    <button onClick="playVid()">play vid</button>
+    <br>
+    <div>Seed a file <input type="file" id="input" /></div>
+    </div>
+    <div id="seeding"></div>
+    <div>Get a magnet <textarea id="magnet"></textarea> <button id="receive" onclick="receiveMagnet()">Get it!</button></div>
+    <div id="receiving"></div>
+    <script>
+      function playVid() {
+        const client = new WebTorrent();
+        const torrentId =
+          "magnet:?xt=urn:btih:08ada5a7a6183aae1e09d831df6748d566095a10&dn=Sintel&tr=udp%3A%2F%2Fexplodie.org%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.fastcast.nz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&ws=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2F&xs=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2Fsintel.torrent";
+
+        client.add(torrentId, function (torrent) {
+          // Torrents can contain many files. Let's use the .mp4 file
+          const file = torrent.files.find(function (file) {
+            return file.name.endsWith(".mp4");
+          });
+
+          // Render to a <video> element by providing an ID. Alternatively, one can also provide a DOM element.
+          file.renderTo("#video-container", {}, () => {
+            console.log("Ready to play!");
+          });
+        });
+      }
+
+      const inputElement = document.getElementById("input");
+      inputElement.addEventListener("change", seedIt, false);
+
+      function seedIt() {
+        const client = new WebTorrent()
+
+        const files = document.getElementById('input').files;
+
+        console.log(`seeding ${files}`)
+
+
+        // When user drops files on the browser, create a new torrent and start seeding it!
+        client.seed(files, function (torrent) {
+          console.log('Client is seeding ' + torrent.magnetURI)
+          document.getElementById('seeding').innerHTML=`<h2>Seeding! ${torrent.magnetURI}</h2>`
+        })
+
+      }
+
+      function receiveMagnet() {
+        const client = new WebTorrent()
+
+        const torrentId = document.getElementById('magnet').value
+
+        if(!torrentId) {
+          alert('enter in a magnet please, and try again')
+          return;
+        }
+
+        document.getElementById('receiving').innerHTML=`<h2>Receiving!</h2>`
+        client.add(torrentId, function (torrent) {
+          document.getElementById('receiving').innerHTML=`<h2>Done</h2>`
+          torrent.files[0].appendTo('body')
+        })
+      }
+    </script>
+  </body>
+</html>
