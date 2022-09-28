@@ -40,7 +40,7 @@
       inputElement.addEventListener("change", seedIt, false);
 
       function seedIt() {
-        const client = new WebTorrent()
+        const client = new WebTorrent({lsd: false, webSeeds: false, dht: false})
 
         const files = document.getElementById('input').files;
 
