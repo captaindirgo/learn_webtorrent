@@ -65,7 +65,7 @@
           return;
         }
 
-        document.getElementById('receiving').innerHTML=`<h2>Receiving!</h2>`
+        document.getElementById('receiving').innerHTML=`<h2>receiving!</h2>`
         client.add(torrentId, function (torrent) {
           document.getElementById('receiving').innerHTML=`<h2>Done</h2>`
           torrent.files[0].appendTo('body')
